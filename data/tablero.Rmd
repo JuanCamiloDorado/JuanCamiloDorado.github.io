@@ -1,0 +1,264 @@
+---
+title: "Probabilidad y Estadística - Actividad 131"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+data("iris")
+data("dataCovid")
+library(ggplot2)
+dataCovid <- read.csv("C:/Users/dorad/Downloads/prueba2/data/Casos1.csv", sep = ",")
+```
+
+# 1
+Column {data-width=550 .tabset}
+-----------------------------------------------------------------------
+
+### **Distribución de Cantidad de infectados por Departamento**
+
+```{r}
+par(mar = c(9, 3, 5, 3))
+barplot(table(dataCovid$Departamento.o.Distrito), main = "Distribucion de Cantidad de infectados por Departamento",xlab = "", ylab = "Cantidad total infectados", col = "lightblue", las = 2,cex.names = 0.8)
+```
+
+###  **Análisis gráfica**
+```{r out.width="50%", fig.align = "center"}
+knitr::include_graphics("colombia.png")
+```
+<div style="font-family: Arial, sans-serif; font-size: 12pt; text-align: justify;">Los datos muestran la distribución geográfica de casos confirmados en Colombia, lo que permite identificar las áreas más afectadas por la pandemia.
+
+**Bogotá D.C.:** La capital, Bogotá, tiene el número más alto de casos confirmados, con 542 casos. Esto no es sorprendente, ya que Bogotá es la ciudad más poblada de Colombia y un importante centro de viajes y comercio.
+
+**Valle del Cauca:** Este departamento también tiene un alto número de casos confirmados, con 150 casos. Es un importante centro económico y comercial en el suroeste de Colombia.
+
+**Barranquilla D.E.:** Barranquilla, en el departamento de Atlántico, tiene 31 casos confirmados. Aunque es una ciudad importante, su número de casos es más bajo en comparación con Bogotá y Valle del Cauca.
+
+**Departamentos con pocos casos:** Algunos departamentos, como La Guajira, Sucre, y San Andrés, tienen un número relativamente bajo de casos confirmados, con 1 o 2 casos. Estos departamentos pueden tener poblaciones más pequeñas o medidas de contención efectivas.
+
+**Variación por departamento:** La variación en el número de casos por departamento sugiere que la propagación de COVID-19 no es uniforme en todo el país. Factores como la densidad de población, las medidas de distanciamiento social y la capacidad de atención médica pueden influir en esta variación.</div>
+
+
+
+Column {data-width=450}
+-----------------------------------------------------------------------
+
+### **Porcentajes por Sexo de infectados por Covid-19**
+
+```{r}
+
+frecuencias <- table(dataCovid$Sexo)
+# Calcular los porcentajes
+porcentajes <- prop.table(frecuencias) * 100
+
+tabla_completa <- data.frame(Categoria = names(frecuencias),
+                             Frecuencia = frecuencias,
+                             Porcentaje = porcentajes)
+
+ggplot(tabla_completa, aes(x = "", y = porcentajes, fill = Categoria)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar(theta = "y") +
+  theme_void() +
+  labs(fill = "Sexo", 
+       title = element_text(size = 36))+
+  
+  ggtitle("Porcentajes por Sexo") + theme(plot.title = element_text(size = 20 , hjust = 0.5)) +
+  geom_text(aes(label = paste0(round(porcentajes, 1), "%")),
+            position = position_stack(vjust = 0.5),
+            size = 9) +
+  theme(legend.position = "bottom")
+
+```
+
+### **Tipo de recuperación**
+
+```{r}
+par(cex = 1.3) 
+par(mar = c(0,5, 3, 7))
+tipo_frecuencia <- table(dataCovid$Atención..)
+
+porcentajes <- round(prop.table(tipo_frecuencia) * 100, 1)
+
+# Crear el diagrama de torta con porcentajes
+pie(tipo_frecuencia, labels = paste(names(tipo_frecuencia), "(", porcentajes, "%)", sep = ""),
+    main = "Tipo de recuperacion",
+    col = rainbow(length(tipo_frecuencia)),
+    radius = 1)
+
+
+  
+```
+
+# (valueBox) {data-width=380}
+-----------------------------------------------------------------------
+### Edad promedio de personas infectadas
+```{r}
+valueBox("42 años", icon = "fa-hourglass", color = "yellow")
+
+```
+
+### Total de mujeres infectadas
+```{r}
+valueBox("568 mujeres", icon = "fa-venus", color = "pink")
+
+```
+
+### Total de hombres infectados
+```{r}
+valueBox("593 hombres", icon = "fa-mars", color = "blue")
+
+```
+
+### Fallecidos
+```{r}
+valueBox("19 personas", icon = "fa-skull-crossbones", color = "red")
+
+```
+
+### Ciudad con mas personas infectadas
+```{r}
+valueBox("Bogotá con 542", icon = "fa-map-marker-alt", color = "orange") 
+
+```
+
+
+
+
+
+
+
+# 2 
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+### **Diagrama de cajas - Edad**
+
+```{r}
+boxplot(dataCovid$Edad, main="Diagrama de cajas de edad",col="#6abce2", las=1)
+abline(h=30, col="red")
+```
+
+
+
+
+
+
+Column {.tabset}
+-----------------------------------------------------------------------
+### **Histograma** 
+
+```{r}
+ggplot(dataCovid, aes(x = Edad)) +
+  geom_histogram(binwidth = 1, fill = "blue", color = "black") +
+  geom_vline(xintercept = 30, col = "#f6b915", lwd = 1) +
+  labs(title = "Histograma de Edades de Personas con COVID-19",
+       x = "Edad",
+       y = "Frecuencia") +
+  theme_minimal()
+```
+
+
+### **Diagrama densidad**
+```{r}
+ggplot(dataCovid, aes(x = Edad)) +
+  geom_density(fill = "#6abce2", color = "#000000") +
+  labs(title = "Diagrama de Densidad de Edad",
+       x = "Edad",
+       y = "Densidad")
+```
+
+### **Diagrama de puntos**
+```{r}
+ggplot(dataCovid, aes(x = 1, y = Edad)) +
+  geom_jitter(width = 0.2, height = 0, color = "#6abce2") +
+  labs(title = "Diagrama de Puntos de Edad",
+       x = "",
+       y = "Edad") +
+  theme_minimal() +
+  theme(axis.title.x = element_blank())
+```
+
+
+### **Resumen estadístico**
+```{r, fig.align = "center"}
+summary(dataCovid$Edad)
+
+```
+<div style="font-family: Arial, sans-serif; font-size: 12pt; text-align: justify;"> Estos valores proporcionan una visión general de la distribución de edades en esta población afectada por la enfermedad. El valor mínimo de 0 años indica la presencia de casos en recién nacidos o en personas de muy corta edad, mientras que el primer cuartil en 29 años sugiere que aproximadamente el 25% de los infectados tenían menos de 29 años. La mediana, que se encuentra en 40 años, divide la muestra en dos partes iguales, lo que significa que el 50% tenía menos de 40 años y el otro 50% tenía más de 40 años. El valor promedio o media es de 42.13 años, lo que indica que, en promedio, los pacientes infectados tenían alrededor de 42 años. El tercer cuartil en 54 años señala que el 75% de los infectados tenían menos de 54 años. Por último, el valor máximo de 88 años representa la edad más alta registrada en esta población. Estos números son esenciales para comprender la distribución de edades entre los afectados por el COVID-19 en el año 2020 y pueden ser valiosos para tomar decisiones informadas relacionadas con la atención médica y la prevención.</div>
+
+
+# 3
+Column {data-width=550 .tabset}
+-----------------------------------------------------------------------
+
+### **Distribución de Cantidad de infectados País de procedencia**
+
+```{r, fig.height=5, fig.width=8}
+par(mar = c(16, 3, 2, 3))
+barplot(table(dataCovid$País.de.procedencia), main = "Infectados por Pais de procedencia",xlab = "", ylab = "Cantidad total infectados", col = "lightblue", las = 2,cex.names = 0.8)
+```
+
+###  **Análisis gráfica**
+```{r out.width="100%", out.height="40%", fig.align = "center"}
+knitr::include_graphics("mundo2.jpg")
+```
+<div style="font-family: Arial, sans-serif; font-size: 12pt; text-align: justify;"> **Diversidad de países:** Los datos muestran una gran diversidad de países y regiones como lugares de procedencia de las personas infectadas. 
+
+**Focos de infección:** Algunos países tienen un número significativamente mayor de casos reportados, como Colombia con 636 casos, Estados Unidos con 124 casos y España con 190 casos. Esto puede estar relacionado con la población, la cantidad de pruebas realizadas o la tasa de propagación en esos lugares.
+
+**Internacionalización de la infección:** Se observa que hay casos que involucran múltiples países, como "Italia - España - Turquía" o "Jamaica - Panamá - Isla Caimán". Esto refleja cómo la enfermedad puede propagarse a través de viajes internacionales y contactos entre personas de diferentes regiones.
+
+**Regiones vecinas:** Algunos países vecinos tienen casos similares, como "Italia - España - Turquía" o "Panamá - Jamaica", lo que sugiere una posible propagación regional de la enfermedad.
+
+**Islas del Caribe:** Varias islas del Caribe, como "Aruba", "Islas San Martin" y "Jamaica", tienen casos reportados. Estos lugares, a menudo dependientes del turismo, pueden verse particularmente afectados por la pandemia.
+
+**Concentración en áreas urbanas:** Ciudades como Madrid, Londres, y Bogotá no solo son áreas urbanas densamente pobladas sino también centros de transporte internacional, lo que puede explicar el número de casos reportados.
+
+**Menos casos en algunas regiones:** Algunos países tienen un número relativamente bajo de casos reportados, lo que podría deberse a una combinación de factores, como medidas de contención efectivas, baja densidad de población o acceso limitado a pruebas.</div>
+
+
+
+Column {data-width=500}
+-----------------------------------------------------------------------
+
+
+
+### **Diagrama de Torta - País de procedencia**
+```{r}
+par(cex = 1.3) 
+par(mar = c(4.5, 4.5, 4.5, 4.5))
+tipo_frecuencia <- table(dataCovid$País.de.procedencia)
+porcentajes <- round(prop.table(tipo_frecuencia) * 100, 1)
+
+# Seleccionar los N países más frecuentes para mostrar
+n_paises_mostrar <- 4
+paises_mostrar <- names(sort(tipo_frecuencia, decreasing = TRUE)[1:n_paises_mostrar])
+
+# Crear el diagrama de torta con porcentajes
+pie(tipo_frecuencia[paises_mostrar], 
+    labels = paste(paises_mostrar, "(", porcentajes[paises_mostrar], "%)", sep = ""),
+    main = "Pais de procedencia",
+    col = rainbow(length(paises_mostrar)),
+    clockwise = TRUE,
+    radius = 1,)  # Ajusta el radio para dar más espacio a las etiquetas
+```
+
+
+### **Diagrama de Torta - Tipo de Casos COVID-19**
+```{r}
+par(cex = 1.3) 
+tipo_frecuencia <- table(dataCovid$Tipo)
+
+porcentajes <- round(prop.table(tipo_frecuencia) * 100, 1)
+# Crear el diagrama de torta con porcentajes
+pie(tipo_frecuencia, labels = paste(names(tipo_frecuencia), "(", porcentajes, "%)", sep = ""),
+    main = "Tipo de Casos COVID-19",
+    col = rainbow(length(tipo_frecuencia)),
+    clockwise = TRUE,
+    radius = 1,)  # Ajusta el radio para dar más espacio a las etiquetas
+
+```
+
